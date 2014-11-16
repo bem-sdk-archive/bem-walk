@@ -3,6 +3,10 @@
   "version": "0.0.4",
   "description": "",
   "main": "lib/index.js",
+  "repository": {
+      "type": "git",
+      "url": "git://github.com/andrewblond/bem-walk.git"
+  },
   "scripts": {
     "test": "npm run lint && npm run cover",
     "lint": "jshint . && jscs . -c .jscs.js",
