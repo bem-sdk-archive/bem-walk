@@ -1,6 +1,4 @@
-var path = require('path'),
-    mock = require('mock-fs'),
-    walk = require('../../lib/index'),
+var mock = require('mock-fs'),
     verboseAssert = require('../lib/assert'),
     opts = { scheme: 'flat' },
     assert = function (levels, expected, done) {

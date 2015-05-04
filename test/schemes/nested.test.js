@@ -1,5 +1,4 @@
-var path = require('path'),
-    mock = require('mock-fs'),
+var mock = require('mock-fs'),
     walk = require('../../lib/index'),
     verboseAssert = require('../lib/assert'),
     opts = { scheme: 'nested' },
