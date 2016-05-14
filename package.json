@@ -28,7 +28,7 @@
     "ava": "^0.14.0",
     "benchmark": "^2.1.0",
     "coveralls": "^2.11.9",
-    "eslint": "^2.9.0",
+    "eslint": "^2.10.1",
     "eslint-config-pedant": "^0.4.0",
     "jscs": "^3.0.3",
     "mock-fs": "^3.9.0",
