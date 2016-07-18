@@ -1,69 +1,239 @@
-bem-walk
-========
+# bem-walk
 
-[![NPM Status][npm-img]][npm]
-[![Travis Status][test-img]][travis]
-[![Windows Status][appveyor-img]][appveyor]
-[![Coverage Status][coverage-img]][coveralls]
-[![Dependency Status][david-img]][david]
+## Что это?
 
-[npm]:          https://www.npmjs.org/package/bem-walk
-[npm-img]:      https://img.shields.io/npm/v/bem-walk.svg
+Инструмент обходит файловую структуру БЭМ-проекта и возвращает информацию о найденных файлах.
 
-[travis]:       https://travis-ci.org/bem-sdk/bem-walk
-[test-img]:     https://img.shields.io/travis/bem-sdk/bem-walk.svg?label=tests
+## Требования к установке
 
-[appveyor]:     https://ci.appveyor.com/project/blond/bem-walk
-[appveyor-img]: http://img.shields.io/appveyor/ci/blond/bem-walk.svg?style=flat&label=windows
+Node.js 4.0+
 
-[coveralls]:    https://coveralls.io/r/bem-sdk/bem-walk
-[coverage-img]: https://img.shields.io/coveralls/bem-sdk/bem-walk.svg
-
-[david]:        https://david-dm.org/bem-sdk/bem-walk
-[david-img]:    http://img.shields.io/david/bem-sdk/bem-walk.svg?style=flat
-
-Install
--------
+## Установка
 
 ```
-$ npm install --save-dev bem-walk
+$ npm install --save bem-walk
 ```
 
-Usage
------
+## Быстрый старт
+
+```js
+var walk = require('bem-walk'),
+    config = {
+        // уровни проекта
+        levels: {
+            'lib/bem-core/common.blocks': { naming: 'origin' },
+            'common.blocks': { naming: 'origin' }
+        }
+    },
+    files = [];
+
+var stream = walk([
+    'libs/bem-core/common.blocks',
+    'common.blocks'
+], config);
+
+stream.on('data', function(file) {
+    files.push(file);
+});
+
+stream.on('error', function(err) {
+    console.log(err);
+});
+
+stream.on('end', function() {
+    console.log(files);
+});
+```
+
+## Начало работы
+
+Прежде чем использовать `bem-walk`, необходимо описать уровни файловой системы в объекте `config`:
+
+```js
+  var config = {
+        // cписок уровней
+        levels: {
+            'lib/bem-core/common.blocks': { naming: 'origin' },
+            'common.blocks': { scheme: 'nested' }
+        }
+    };
+```
+* `naming` — схема именования файлов.
+* `scheme` — схема файловой структуры.
+
+Подробнее:
+* [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/);
+* [bem-fs-scheme](https://ru.bem.info/toolbox/sdk/bem-fs-scheme/).
+
+## API
+
+### walk()
+
+#### Описание
+
+`walk(levels, config);`
+
+#### Входные параметры
+
+**levels**
+
+Тип: string[]
+
+Описание: пути для обхода (абсолютные или относительные).
+
+```js
+[
+ 'lib/bem-core/common.blocks', // относительно корня сайта
+ '//vash-site.com/lib/bem-core/common.blocks' // абсолютный путь
+]
+```
+
+**config**
+
+Тип: object
+
+Описание: уровни проекта.
+
+
+**Важно!**  В случае, если ранее уровни проекта были описаны в `bem-config`, можно воспользоваться методом `levelMapSync()`, который возвращает аналогичный объект.
+
+```js
+var config = require('bem-config')();
+var levelMap = config.levelMapSync();
+console.log(levelMap);
+```
+
+#### Возвращает
+
+Поток с возможностью чтения (`stream.Readable`), который имеет следующие события:
+
+##### Событие: 'data'
+
+`function (file) { }`
+
+Передаёт обработчику JavaScript-объект, содержащий информацию о найденном файле:
+
+В JSON-интерфейсе:
+
+```js
+{
+    entity: { block: "page" },
+    level: "libs/bem-core/desktop.blocks",
+    tech: "bemhtml",
+    path: "libs/bem-core/desktop.blocks/page/page.bemhtml.js"
+}
+```
+
+* `entity` — БЭМ-сущность;
+* `level`  — путь к уровню;
+* `tech`   — технология реализации;
+* `path`   — относительный путь к файлу;
+
+##### Событие: 'end'
+
+`function () { }`
+
+Генерируется когда `bem-walk` заканчивает обход всех уровней, описанных в объекте `levels`.
+
+##### Событие: 'error'
+
+`function (err) { }`
+
+Генерируется если при обходе уровней произошла ошибка.
+
+#### Примеры использования
+
+##### Группировка
+
+```js
+var walk = require('bem-walk'),
+    config = {
+        // уровни проекта
+        levels: {
+            'lib/bem-core/common.blocks': { naming: 'origin' },
+            'common.blocks': { naming: 'origin' }
+        }
+    },
+    groups = {};
+
+var stream = walk([
+    'libs/bem-core/common.blocks',
+    'common.blocks'
+], config);
+
+stream.on('data', function(file) {
+    (groups[file.entity.block] = []).push(file);
+});
+
+stream.on('error', function(err) {
+    console.log(err);
+});
+
+stream.on('end', function() {
+    console.log(groups);
+});
+```
+##### Фильтрация
+
+```js
+var walk = require('bem-walk'),
+    config = {
+        // уровни проекта
+        levels: {
+            'lib/bem-core/common.blocks': { naming: 'origin' },
+            'common.blocks': { naming: 'origin' }
+        }
+    },
+    files = [];
+
+var stream = walk([
+    'libs/bem-core/common.blocks',
+    'common.blocks'
+], config);
+
+stream.on('data', function(file) {
+    if (file.entity.block !== 'button') {
+        files.push(file);
+    }  
+});
+
+stream.on('error', function(err) {
+    console.log(err);
+});
+
+stream.on('end', function() {
+    console.log(files);
+});
+```
+
+##### Трансформация
 
 ```js
 var walk = require('bem-walk'),
     stringify = require('JSONStream').stringify,
+    through2 = require('through2'),
+    fs = require('fs'),
     config = {
+        // уровни проекта
         levels: {
-            'lib/bem-core/common.blocks': { scheme: 'nested' },
-            'lib/bem-core/desktop.blocks': { scheme: 'nested' },
-            'common.blocks': { scheme: 'flat' },
-            'desktop.blocks': { scheme: 'flat' }
+            'lib/bem-core/common.blocks': { naming: 'origin' },
+            'common.blocks': { naming: 'origin' }
         }
-    };
+    },
+    files = [];
 
-walk([
+var stream = walk([
     'libs/bem-core/common.blocks',
-    'libs/bem-core/desktop.blocks',
-    'common.blocks',
-    'desktop.blocks'
-], config)
+    'common.blocks'
+], config);
+
+
+stream.pipe(through2.obj(function (file, enc, callback) {
+    file.source = fs.readFileSync(file.path).toString('utf-8');
+    this.push(file);
+
+    callback();
+}))
     .pipe(stringify())
     .pipe(process.stdout);
-
-// [{
-//     entity: { block: "page" },
-//     level: "libs/bem-core/desktop.blocks",
-//     tech: "bemhtml.js",
-//     path: "libs/bem-core/desktop.blocks/page/page.bemhtml.js"
-// },
-// ...
-// ]
 ```
-
-License
--------
-
-Code and documentation copyright 2014 YANDEX LLC. Code released under the [Mozilla Public License 2.0](LICENSE.txt).
