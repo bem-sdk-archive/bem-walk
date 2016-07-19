@@ -2,47 +2,51 @@
 
 ## Что это?
 
-Инструмент обходит файловую структуру БЭМ-проекта и возвращает информацию о найденных файлах.
-
-## Требования к установке
-
-Node.js 4.0+
+Инструмент обходит файловую систему БЭМ-проекта и возвращает информацию о найденных файлах.
 
 ## Установка
 
 ```
 $ npm install --save bem-walk
 ```
+Для работы требуется Node.js 4.0+.
 
 ## Быстрый старт
 
 ```js
-var walk = require('bem-walk'),
-    config = {
-        // уровни проекта
-        levels: {
-            'lib/bem-core/common.blocks': { naming: 'origin' },
-            'common.blocks': { naming: 'origin' }
-        }
-    },
+var сonfig = require('bem-config')(),
+    walk = require('bem-walk'),
+    levelMap = сonfig.levelMapSync(),
     files = [];
 
 var stream = walk([
     'libs/bem-core/common.blocks',
     'common.blocks'
-], config);
+], levelMap);
 
-stream.on('data', function(file) {
-    files.push(file);
-});
+stream.on('data', (file) => files.push(file));
 
-stream.on('error', function(err) {
-    console.log(err);
-});
+stream.on('error', console.error);
 
-stream.on('end', function() {
-    console.log(files);
-});
+stream.on('end', () => console.log(files));
+
+```
+
+Пример организации файловой структуры БЭМ-проекта:
+
+```files
+common.blocks/            # Уровень проекта
+libs/
+    bem-core/             # Уровень библиотеки `bem-core`
+        common.blocks/    
+```
+
+**Важно!**  Приведенный выше пример использует уровни проекта, описанные в `bem-config`.
+
+```js
+var config = require('bem-config')();
+var levelMap = config.levelMapSync();
+console.log(levelMap);
 ```
 
 ## Начало работы
@@ -79,11 +83,11 @@ stream.on('end', function() {
 
 Тип: string[]
 
-Описание: пути для обхода (абсолютные или относительные).
+Описание: пути для обхода (относительные или абсолютные).
 
 ```js
 [
- 'lib/bem-core/common.blocks', // относительно корня сайта
+ 'lib/bem-core/common.blocks', // путь относительно каталога, из которого запущен `bem-walk`.
  '//vash-site.com/lib/bem-core/common.blocks' // абсолютный путь
 ]
 ```
@@ -93,15 +97,6 @@ stream.on('end', function() {
 Тип: object
 
 Описание: уровни проекта.
-
-
-**Важно!**  В случае, если ранее уровни проекта были описаны в `bem-config`, можно воспользоваться методом `levelMapSync()`, который возвращает аналогичный объект.
-
-```js
-var config = require('bem-config')();
-var levelMap = config.levelMapSync();
-console.log(levelMap);
-```
 
 #### Возвращает
 
@@ -155,18 +150,13 @@ var stream = walk([
     'common.blocks'
 ], config);
 
-stream.on('data', function(file) {
-    (groups[file.entity.block] = []).push(file);
-});
+stream.on('data', (file) => (groups[file.entity.block] = []).push(file));
 
-stream.on('error', function(err) {
-    console.log(err);
-});
+stream.on('error', console.error);
 
-stream.on('end', function() {
-    console.log(groups);
-});
+stream.on('end', () => console.log(groups));
 ```
+
 ##### Фильтрация
 
 ```js
@@ -191,13 +181,10 @@ stream.on('data', function(file) {
     }  
 });
 
-stream.on('error', function(err) {
-    console.log(err);
-});
+stream.on('error', console.error);
 
-stream.on('end', function() {
-    console.log(files);
-});
+stream.on('end', () => console.log(files));
+
 ```
 
 ##### Трансформация
