@@ -130,9 +130,9 @@ console.log(levelMap);
 
 Генерируется, если при обходе уровней произошла ошибка.
 
-#### Примеры использования
+## Примеры использования
 
-##### Группировка
+### Группировка
 
 ```js
 var walk = require('bem-walk'),
@@ -157,7 +157,7 @@ stream.on('error', console.error);
 stream.on('end', () => console.log(groups));
 ```
 
-##### Фильтрация
+### Фильтрация
 
 ```js
 var walk = require('bem-walk'),
@@ -187,7 +187,7 @@ stream.on('end', () => console.log(files));
 
 ```
 
-##### Трансформация
+### Трансформация
 
 ```js
 var walk = require('bem-walk'),
