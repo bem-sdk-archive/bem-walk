@@ -83,15 +83,22 @@ console.log(levelMap);
 
 Тип: string[]
 
-Описание: пути для обхода (относительные или абсолютные).
+Описание: пути для обхода.
 
 ```js
 [
- 'lib/bem-core/common.blocks', // путь относительно каталога, из которого запущен `bem-walk`.
- '//vash-site.com/lib/bem-core/common.blocks' // абсолютный путь
+ 'lib/bem-core/common.blocks',
+ 'common.blocks'
 ]
 ```
+Можно использовать абсолютный URL, например, так:
 
+```js
+[
+ '//www.cosmofarm.ru/lib/bem-core/common.blocks',
+ '//www.cosmofarm.ru/common.blocks'
+]
+```
 **config**
 
 Тип: object
