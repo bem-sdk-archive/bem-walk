@@ -25,13 +25,13 @@ libs/
 Прежде чем использовать `bem-walk`, необходимо описать уровни файловой системы в объекте `config`:
 
 ```js
-  var config = {
-        // cписок уровней
-        levels: {
-            'lib/bem-core/common.blocks': { naming: 'origin' },
-            'common.blocks': { scheme: 'nested' }
-        }
-    };
+var config = {
+    // cписок уровней
+    levels: {
+        'lib/bem-core/common.blocks': { naming: 'origin' },
+        'common.blocks': { scheme: 'nested' }
+    }
+};
 ```
 * `naming` — схема именования файлов.
 * `scheme` — схема файловой структуры.
@@ -39,6 +39,7 @@ libs/
 Подробнее:
 * [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/);
 * [bem-fs-scheme](https://ru.bem.info/toolbox/sdk/bem-fs-scheme/).
+
 
 ```js
 var walk = require('bem-walk'),
@@ -87,18 +88,20 @@ console.log(levelMap);
 
 Описание: пути для обхода.
 
+Путь относительно рабочего каталога:
+
 ```js
 [
  'lib/bem-core/common.blocks',
  'common.blocks'
 ]
 ```
-Можно использовать абсолютный URL, например, так:
+Может быть указан абсолютный путь, например, так:
 
 ```js
 [
- '//www.cosmofarm.ru/lib/bem-core/common.blocks',
- '//www.cosmofarm.ru/common.blocks'
+ '/path/to/project/lib/bem-core/common.blocks',
+ '/path/to/project/common.blocks'
 ]
 ```
 **config**
@@ -217,8 +220,8 @@ var stream = walk([
     'common.blocks'
 ], config);
 
-
 stream.pipe(through2.obj(function (file, enc, callback) {
+    // Создание свойства source объекта file
     file.source = fs.readFileSync(file.path).toString('utf-8');
     this.push(file);
 
