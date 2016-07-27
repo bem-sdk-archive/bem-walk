@@ -13,26 +13,7 @@ $ npm install --save bem-walk
 
 ## Быстрый старт
 
-```js
-var сonfig = require('bem-config')(),
-    walk = require('bem-walk'),
-    levelMap = сonfig.levelMapSync(),
-    files = [];
-
-var stream = walk([
-    'libs/bem-core/common.blocks',
-    'common.blocks'
-], levelMap);
-
-stream.on('data', (file) => files.push(file));
-
-stream.on('error', console.error);
-
-stream.on('end', () => console.log(files));
-
-```
-
-Пример организации файловой структуры БЭМ-проекта:
+Пример файловой системы БЭМ-проекта:
 
 ```files
 common.blocks/            # Уровень проекта
@@ -40,16 +21,6 @@ libs/
     bem-core/             # Уровень библиотеки `bem-core`
         common.blocks/    
 ```
-
-**Важно!**  Приведенный выше пример использует уровни проекта, описанные в `bem-config`.
-
-```js
-var config = require('bem-config')();
-var levelMap = config.levelMapSync();
-console.log(levelMap);
-```
-
-## Начало работы
 
 Прежде чем использовать `bem-walk`, необходимо описать уровни файловой системы в объекте `config`:
 
@@ -68,6 +39,37 @@ console.log(levelMap);
 Подробнее:
 * [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/);
 * [bem-fs-scheme](https://ru.bem.info/toolbox/sdk/bem-fs-scheme/).
+
+```js
+var walk = require('bem-walk'),
+    config = {
+        // уровни проекта
+        levels: {
+            'lib/bem-core/common.blocks': { naming: 'origin' },
+            'common.blocks': { naming: 'origin' }
+        }
+    },
+    files = [];
+
+var stream = walk([
+    'libs/bem-core/common.blocks',
+    'common.blocks'
+], config);
+
+stream.on('data', file => files.push(file));
+
+stream.on('error', console.error);
+
+stream.on('end', () => console.log(files));
+```
+
+**Важно!**  Описывать все уровни проекта вручную необязательно, можно воспользоваться пакетом [`bem-config`](https://ru.bem.info/toolbox/sdk/bem-config/).
+
+```js
+var config = require('bem-config')();
+var levelMap = config.levelMapSync();
+console.log(levelMap);
+```
 
 ## API
 
@@ -157,7 +159,7 @@ var stream = walk([
     'common.blocks'
 ], config);
 
-stream.on('data', (file) => (groups[file.entity.block] = []).push(file));
+stream.on('data', file => (groups[file.entity.block] = []).push(file));
 
 stream.on('error', console.error);
 
