@@ -22,24 +22,7 @@ libs/
         common.blocks/    
 ```
 
-Прежде чем использовать `bem-walk`, необходимо описать уровни файловой системы в объекте `config`:
-
-```js
-var config = {
-    // cписок уровней
-    levels: {
-        'lib/bem-core/common.blocks': { naming: 'origin' },
-        'common.blocks': { scheme: 'nested' }
-    }
-};
-```
-* `naming` — схема именования файлов.
-* `scheme` — схема файловой структуры.
-
-Подробнее:
-* [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/);
-* [bem-fs-scheme](https://ru.bem.info/toolbox/sdk/bem-fs-scheme/).
-
+Прежде чем использовать `bem-walk`, необходимо описать уровни файловой системы в объекте `config`.
 
 ```js
 var walk = require('bem-walk'),
@@ -64,7 +47,14 @@ stream.on('error', console.error);
 stream.on('end', () => console.log(files));
 ```
 
-**Важно!**  Описывать все уровни проекта вручную необязательно, можно воспользоваться пакетом [`bem-config`](https://ru.bem.info/toolbox/sdk/bem-config/).
+* `naming` — схема именования файлов;
+* `scheme` — схема файловой структуры.
+
+Подробнее:
+* [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/);
+* [bem-fs-scheme](https://ru.bem.info/toolbox/sdk/bem-fs-scheme/).
+
+**Важно!**  Также уровни проекта можно описать с помощью пакета [`bem-config`](https://ru.bem.info/toolbox/sdk/bem-config/).
 
 ```js
 var config = require('bem-config')();
@@ -122,17 +112,17 @@ console.log(levelMap);
 
 ```js
 {
-    entity: { block: "page" },
-    level: "libs/bem-core/desktop.blocks",
-    tech: "bemhtml",
-    path: "libs/bem-core/desktop.blocks/page/page.bemhtml.js"
+    "entity": { "block": "page" },
+    "level": "libs/bem-core/desktop.blocks",
+    "tech": "bemhtml",
+    "path": "libs/bem-core/desktop.blocks/page/page.bemhtml.js"
 }
 ```
 
 * `entity` — БЭМ-сущность;
 * `level`  — путь к уровню;
 * `tech`   — технология реализации;
-* `path`   — относительный путь к файлу;
+* `path`   — относительный путь к файлу.
 
 ##### Событие: 'end'
 
@@ -196,7 +186,6 @@ stream.on('data', function(file) {
 stream.on('error', console.error);
 
 stream.on('end', () => console.log(files));
-
 ```
 
 ### Трансформация
