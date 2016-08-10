@@ -1,28 +1,93 @@
 # bem-walk
 
-## Что это?
+Инструмент, позволяющий обойти файловую систему БЭМ-проекта и получить информацию о найденных файлах.
 
-Инструмент обходит файловую систему БЭМ-проекта и возвращает информацию о найденных файлах.
+## Быстрый старт
 
-## Установка
+### Шаг 1. Установите bem-walk
 
 ```
 $ npm install --save bem-walk
 ```
+
 Для работы требуется Node.js 4.0+.
 
-## Быстрый старт
+### Шаг 2. Подключите bem-walk
 
-Пример файловой системы БЭМ-проекта:
+Прежде чем использовать `bem-walk`, необходимо создать JavaScript-файл и добавить строку следующего вида:
 
-```files
-common.blocks/            # Уровень проекта
-libs/
-    bem-core/             # Уровень библиотеки `bem-core`
-        common.blocks/    
+```js
+var walk = require('bem-walk');
 ```
 
-Прежде чем использовать `bem-walk`, необходимо описать уровни файловой системы в объекте `config`.
+### Шаг 3. Опишите уровни файловой системы
+
+Опишите уровни файловой системы проекта в объекте `config`.
+
+```js
+var config = {
+    // уровни проекта
+    levels: {
+        'lib/bem-core/common.blocks': { naming: 'origin' }, // `naming` — схема именования файлов
+        'common.blocks': { sheme: 'nested' } // `scheme` — схема файловой структуры
+    }
+};
+```
+
+**Примечание** В примере скрипта указаны используемые схемы именования файлов и файловой структуры проекта.
+
+Подробнее:
+* [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/);
+* [bem-fs-scheme](https://ru.bem.info/toolbox/sdk/bem-fs-scheme/).
+
+**Примечание**  Уровни проекта также можно описать с помощью пакета [`bem-config`](https://ru.bem.info/toolbox/sdk/bem-config/).
+
+```js
+var config = require('bem-config')();
+var levelMap = config.levelMapSync();
+```
+
+### Шаг 4. Опишите пути для обхода
+
+Возможные варианты:
+
+* относительно корневого каталога
+
+  ```js
+  var levels = [
+      'libs/bem-core/common.blocks',
+      'common.blocks'
+  ];
+  ```
+
+* абсолютные
+
+  ```js
+  var levels = [
+      '/path/to/project/lib/bem-core/common.blocks',
+      '/path/to/project/common.blocks'
+  ];
+  ```
+
+### Шаг 5. Получите информацию о найденных файлах
+
+Передайте методу walk() объекты `levels` и `config`.
+
+```js
+var files = [];
+
+var stream = walk(levels, config);
+
+stream.on('data', file => files.push(file)); // добавляем информацию о найденном файле в конец массива files
+
+stream.on('error', console.error);
+
+stream.on('end', () => console.log(files));
+```
+
+### Результат
+
+Полный текст примера:
 
 ```js
 var walk = require('bem-walk'),
@@ -33,33 +98,19 @@ var walk = require('bem-walk'),
             'common.blocks': { naming: 'origin' }
         }
     },
+    levels = [
+        'libs/bem-core/common.blocks',
+        'common.blocks'
+    ],
     files = [];
 
-var stream = walk([
-    'libs/bem-core/common.blocks',
-    'common.blocks'
-], config);
+var stream = walk(levels, config);
 
 stream.on('data', file => files.push(file));
 
 stream.on('error', console.error);
 
 stream.on('end', () => console.log(files));
-```
-
-* `naming` — схема именования файлов;
-* `scheme` — схема файловой структуры.
-
-Подробнее:
-* [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/);
-* [bem-fs-scheme](https://ru.bem.info/toolbox/sdk/bem-fs-scheme/).
-
-**Важно!**  Также уровни проекта можно описать с помощью пакета [`bem-config`](https://ru.bem.info/toolbox/sdk/bem-config/).
-
-```js
-var config = require('bem-config')();
-var levelMap = config.levelMapSync();
-console.log(levelMap);
 ```
 
 ## API
@@ -78,7 +129,7 @@ console.log(levelMap);
 
 Описание: пути для обхода.
 
-Путь относительно рабочего каталога:
+Путь относительно корневого каталога:
 
 ```js
 [
@@ -106,7 +157,7 @@ console.log(levelMap);
 
 ##### Событие: 'data'
 
-Передаёт обработчику JavaScript-объект, содержащий информацию о найденном файле:
+Передает обработчику JavaScript-объект, содержащий информацию о найденном файле:
 
 В JSON-интерфейсе:
 
@@ -164,7 +215,7 @@ stream.on('end', () => console.log(groups));
 ```js
 var walk = require('bem-walk'),
     config = {
-        // уровни проекта
+         // уровни проекта
         levels: {
             'lib/bem-core/common.blocks': { naming: 'origin' },
             'common.blocks': { naming: 'origin' }
