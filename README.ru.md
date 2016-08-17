@@ -163,7 +163,7 @@ stream.on('end', () => console.log(files));
 
 #### Выходные данные
 
-Метод `walk()` возвращает поток с возможностью чтения (`stream.Readable`), который имеет следующие события:
+Метод `walk` возвращает поток с возможностью чтения (`stream.Readable`), который имеет следующие события:
 
 ##### Событие: ['data'](https://nodejs.org/api/stream.html#stream_event_data)
 
