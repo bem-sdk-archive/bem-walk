@@ -171,7 +171,7 @@ stream.on('end', () => console.log(files));
 
 | Событие | Описание |
 |----------|-----|
-|'data'|Возвращает обработчику JavaScript-объект с информацией о найденном файле. </br></br> Ниже рассмотрен JSON-интерфейс, включающий элементы, которые входят в ответ метода `walk`. Объекты и ключи приведены с примерами значений. </br></br> **Пример** </br></br> <code>{</code> </br> <code> "entity": { "block": "page" },</code></br><code>"level": "libs/bem-core/desktop.blocks",</code></br><code>"tech": "bemhtml",</code></br><code>"path": "libs/bem-core/desktop.blocks/page/page.bemhtml.js"</code></br><code>}</code></br></br>`entity` — БЭМ-сущность;</br> `level` — путь к директории;</br> `tech` — технология реализации;</br> `path` — относительный путь к файлу.|
+|'data'|Возвращает обработчику JavaScript-объект с информацией о найденном файле. </br></br> Ниже рассмотрен JSON-интерфейс, включающий элементы, которые входят в ответ метода `walk`. Объекты и ключи приведены с примерами значений. </br></br> **Пример** </br></br><code>{</code></br><code>"entity": { "block": "page" },</code></br><code>"level": "libs/bem-core/desktop.blocks",</code></br><code>"tech": "bemhtml",</code></br><code>"path": "libs/bem-core/desktop.blocks/page/page.bemhtml.js"</code></br><code>}</code></br></br>`entity` — БЭМ-сущность;</br> `level` — путь к директории;</br> `tech` — технология реализации;</br> `path` — относительный путь к файлу.|
 | 'error' | Генерируется, если при обходе уровней произошла ошибка. |
 | 'end' | Генерируется, когда `bem-walk` заканчивает обход уровней, описанных в объекте `levels`. |
 
