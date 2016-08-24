@@ -61,9 +61,10 @@ var config = {
 
 **Примечание**  Для каждого уровня указывается схема именования файлов или организации файловой системы. Это позволяет при обходе получать информацию о БЭМ-сущностях [по их именам](https://ru.bem.info/toolbox/sdk/bem-naming/#Строковое-представление) или по именам файлов и директорий.
 
-Если схема не указана, по умолчанию используется:
-* схема именования файлов `origin`;
-* схема файловой системы `nested`.
+|  Схема | Значение по умолчанию | Все возможные значения |
+|----------|-----|----------|
+|`naming` — схема именования файлов.|`origin`| `origin`, `two-dashes`|
+|`sheme` — cхема файловой системы.|`nested`|`nested`, `flat`|
 
 Подробнее:
 * [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/);
@@ -74,6 +75,7 @@ var config = {
 ```js
 var config = require('bem-config')();
 var levelMap = config.levelMapSync();
+var stream = walk(levels, levelMap);
 ```
 
 ### 4. Опишите пути обхода
@@ -172,7 +174,7 @@ stream.on('end', () => console.log(files));
 | Событие | Описание |
 |----------|-----|
 |'data'|Возвращает обработчику JavaScript-объект с информацией о найденном файле. </br></br> Ниже рассмотрен JSON-интерфейс, включающий элементы, которые входят в ответ метода `walk`. Объекты и ключи приведены с примерами значений. </br></br> **Пример** </br></br><code>{</code></br><code>"entity": { "block": "page" },</code></br><code>"level": "libs/bem-core/desktop.blocks",</code></br><code>"tech": "bemhtml",</code></br><code>"path": "libs/bem-core/desktop.blocks/page/page.bemhtml.js"</code></br><code>}</code></br></br>`entity` — БЭМ-сущность;</br> `level` — путь к директории;</br> `tech` — технология реализации;</br> `path` — относительный путь к файлу.|
-| 'error' | Генерируется, если при обходе уровней произошла ошибка. |
+| 'error' | Генерируется, если при обходе уровней произошла ошибка. Возвращается ответ с описанием ошибки.|
 | 'end' | Генерируется, когда `bem-walk` заканчивает обход уровней, описанных в объекте `levels`. |
 
 **Примечание** [Полный список событий](https://nodejs.org/api/stream.html#stream_class_stream_readable).
@@ -191,14 +193,14 @@ var walk = require('bem-walk'),
     config = {
         // уровни проекта
         levels: {
-            'lib/bem-core/common.blocks': { naming: 'origin' },
+            'lib/bem-components/common.blocks': { naming: 'origin' },
             'common.blocks': { naming: 'origin' }
         }
     },
     groups = {};
 
 var stream = walk([
-    'libs/bem-core/common.blocks',
+    'libs/bem-components/common.blocks',
     'common.blocks'
 ], config);
 
@@ -207,6 +209,16 @@ stream.on('data', file => (groups[file.entity.block] = []).push(file));
 stream.on('error', console.error);
 
 stream.on('end', () => console.log(groups));
+
+/*
+{ button:
+   [ { entity: { block: 'button' },
+       tech: 'spec.js',
+       path: 'libs/bem-components/common.blocks/button/_togglable/button_togglable_radio.spec.js',
+       level: 'libs/bem-components/common.blocks' } ],
+ ...
+}
+*/
 ```
 
 ### Фильтрация
@@ -216,14 +228,14 @@ var walk = require('bem-walk'),
     config = {
          // уровни проекта
         levels: {
-            'lib/bem-core/common.blocks': { naming: 'origin' },
+            'lib/bem-components/common.blocks': { naming: 'origin' },
             'common.blocks': { naming: 'origin' }
         }
     },
     files = [];
 
 var stream = walk([
-    'libs/bem-core/common.blocks',
+    'libs/bem-components/common.blocks',
     'common.blocks'
 ], config);
 
@@ -236,6 +248,15 @@ stream.on('data', function(file) {
 stream.on('error', console.error);
 
 stream.on('end', () => console.log(files));
+
+/*
+[{ entity: { block: 'popup', modName: 'target', modVal: true },
+   tech: 'js',
+   path: 'libs/bem-components/common.blocks/popup/_target/popup_target.js',
+   level: 'libs/bem-components/common.blocks' },
+...
+]
+*/
 ```
 
 ### Трансформация
@@ -248,14 +269,14 @@ var walk = require('bem-walk'),
     config = {
         // уровни проекта
         levels: {
-            'lib/bem-core/common.blocks': { naming: 'origin' },
+            'lib/bem-components/common.blocks': { naming: 'origin' },
             'common.blocks': { naming: 'origin' }
         }
     },
     files = [];
 
 var stream = walk([
-    'libs/bem-core/common.blocks',
+    'libs/bem-components/common.blocks',
     'common.blocks'
 ], config);
 
@@ -268,4 +289,13 @@ stream.pipe(through2.obj(function (file, enc, callback) {
 }))
     .pipe(stringify())
     .pipe(process.stdout);
+/*
+[{ entity: { block: 'popup', modName: 'target', modVal: true },
+   tech: 'js',
+   path: 'libs/bem-components/common.blocks/popup/_target/popup_target.js',
+   level: 'libs/bem-components/common.blocks'
+   source: 'libs/bem-components/common.blocks/popup/_target/popup_target.js' },
+...
+]
+*/
 ```
