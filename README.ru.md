@@ -67,8 +67,8 @@ var config = {
 |`sheme` — cхема файловой системы.|`nested`|`nested`, `flat`|
 
 Подробнее:
-* [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/);
-* [bem-fs-scheme](https://ru.bem.info/toolbox/sdk/bem-fs-scheme/).
+* [bem-naming](https://ru.bem.info/toolbox/sdk/bem-naming/)
+* [bem-fs-scheme](https://ru.bem.info/toolbox/sdk/bem-fs-scheme/)
 
 **Примечание** Чтобы не определять уровни проекта вручную, воспользуйтесь инструментом [`bem-config`](https://ru.bem.info/toolbox/sdk/bem-config/).
 
@@ -213,7 +213,8 @@ stream.on('end', () => console.log(util.inspect(groups, { depth: null })));
 { button:
    [ { entity: { block: 'button', modName: 'togglable', modVal: 'radio' },
        tech: 'spec.js',
-       path: 'libs/bem-components/common.blocks/button/_togglable/button_togglable_radio.spec.js',
+       path: 'libs/bem-components/common.blocks/button/_togglable/
+       button_togglable_radio.spec.js',
        level: 'libs/bem-components/common.blocks' } ],
  ...
 }
@@ -295,7 +296,8 @@ stream.pipe(through2.obj(function (file, enc, callback) {
   "tech":"css",
   "path":"common.blocks/search/__header/search__header.css",
   "level":"common.blocks",
-  "source":".search__header {\n\tdisplay: block;\n\tfont-size: 20px;\n\tcolor: rgba(0,0,0,0.84);\n\tmargin: 0;\n\tpadding: 0 0 16px;\n\n}\n\n"},
+  "source":".search__header {\n\tdisplay: block;\n\tfont-size: 20px;\n\tcolor:
+  rgba(0,0,0,0.84);\n\tmargin: 0;\n\tpadding: 0 0 16px;\n\n}\n\n"},
 ...
 ]
 */
