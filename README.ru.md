@@ -174,10 +174,8 @@ stream.on('end', () => console.log(files));
 | Событие | Описание |
 |----------|-----|
 |'data'|Возвращает обработчику JavaScript-объект с информацией о найденном файле. </br></br> Ниже рассмотрен JSON-интерфейс, включающий элементы, которые входят в ответ метода `walk`. Объекты и ключи приведены с примерами значений. </br></br> **Пример** </br></br><code>{</code></br><code>"entity": { "block": "page" },</code></br><code>"level": "libs/bem-core/desktop.blocks",</code></br><code>"tech": "bemhtml",</code></br><code>"path": "libs/bem-core/desktop.blocks/page/page.bemhtml.js"</code></br><code>}</code></br></br>`entity` — БЭМ-сущность;</br> `level` — путь к директории;</br> `tech` — технология реализации;</br> `path` — относительный путь к файлу.|
-| 'error' | Генерируется, если при обходе уровней произошла ошибка. Возвращается ответ с описанием ошибки.|
+| 'error' | Генерируется, если при обходе уровней произошла ошибка. Возвращает ответ с описанием ошибки.|
 | 'end' | Генерируется, когда `bem-walk` заканчивает обход уровней, описанных в объекте `levels`. |
-
-**Примечание** [Полный список событий](https://nodejs.org/api/stream.html#stream_class_stream_readable).
 
 ## Примеры использования
 
@@ -198,6 +196,7 @@ var walk = require('bem-walk'),
         }
     },
     groups = {};
+const util = require('util');
 
 var stream = walk([
     'libs/bem-components/common.blocks',
@@ -208,11 +207,11 @@ stream.on('data', file => (groups[file.entity.block] = []).push(file));
 
 stream.on('error', console.error);
 
-stream.on('end', () => console.log(groups));
+stream.on('end', () => console.log(util.inspect(groups, { depth: null })));
 
 /*
 { button:
-   [ { entity: { block: 'button' },
+   [ { entity: { block: 'button', modName: 'togglable', modVal: 'radio' },
        tech: 'spec.js',
        path: 'libs/bem-components/common.blocks/button/_togglable/button_togglable_radio.spec.js',
        level: 'libs/bem-components/common.blocks' } ],
@@ -240,7 +239,7 @@ var stream = walk([
 ], config);
 
 stream.on('data', function(file) {
-    if (file.entity.block !== 'button') {
+    if (file.entity.block == 'popup') {
         files.push(file);
     }  
 });
@@ -272,8 +271,7 @@ var walk = require('bem-walk'),
             'lib/bem-components/common.blocks': { naming: 'origin' },
             'common.blocks': { naming: 'origin' }
         }
-    },
-    files = [];
+    };
 
 var stream = walk([
     'libs/bem-components/common.blocks',
@@ -282,19 +280,22 @@ var stream = walk([
 
 stream.pipe(through2.obj(function (file, enc, callback) {
     // Создание свойства source объекта file
-    file.source = fs.readFileSync(file.path).toString('utf-8');
-    this.push(file);
+    if(fs.statSync(file.path).isFile()) {
+        file.source = fs.readFileSync(file.path, 'utf-8');
+    }
 
+    this.push(file);
     callback();
 }))
     .pipe(stringify())
     .pipe(process.stdout);
+
 /*
-[{ entity: { block: 'popup', modName: 'target', modVal: true },
-   tech: 'js',
-   path: 'libs/bem-components/common.blocks/popup/_target/popup_target.js',
-   level: 'libs/bem-components/common.blocks'
-   source: 'libs/bem-components/common.blocks/popup/_target/popup_target.js' },
+[{"entity":{"block":"search","elem":"header"},
+  "tech":"css",
+  "path":"common.blocks/search/__header/search__header.css",
+  "level":"common.blocks",
+  "source":".search__header {\n\tdisplay: block;\n\tfont-size: 20px;\n\tcolor: rgba(0,0,0,0.84);\n\tmargin: 0;\n\tpadding: 0 0 16px;\n\n}\n\n"},
 ...
 ]
 */
