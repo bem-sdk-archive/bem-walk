@@ -1,5 +1,11 @@
 # bem-walk
 
+Инструмент позволяет обойти файловую систему БЭМ-проекта и получить следующую информацию о найденных файлах:
+
+* тип БЭМ-сущности (Блок, Элемент, Модификатор);
+* технология реализации;
+* расположение на файловой системе.
+
 [![NPM Status][npm-img]][npm]
 [![Travis Status][test-img]][travis]
 [![Windows Status][appveyor-img]][appveyor]
@@ -20,12 +26,6 @@
 
 [david]:        https://david-dm.org/bem-sdk/bem-walk
 [david-img]:    http://img.shields.io/david/bem-sdk/bem-walk.svg?style=flat
-
-Инструмент позволяет обойти файловую систему БЭМ-проекта и получить следующую информацию о найденных файлах:
-
-* тип БЭМ-сущности (Блок, Элемент, Модификатор);
-* технология реализации;
-* расположение на файловой системе.
 
 ## Быстрый старт
 
@@ -53,13 +53,19 @@ var walk = require('bem-walk');
 var config = {
     // уровни проекта
     levels: {
-        'lib/bem-core/common.blocks': { naming: 'two-dashes' }, // `naming` — схема именования файлов
-        'common.blocks': { sheme: 'nested' } // `scheme` — схема файловой системы
+        'lib/bem-core/common.blocks': {
+            // `naming` — схема именования файлов
+            naming: 'two-dashes'
+        },
+        'common.blocks': {
+            // `scheme` — схема файловой системы
+            sheme: 'nested'
+        }
     }
 };
 ```
 
-**Примечание**  Для каждого уровня указывается схема именования файлов или организации файловой системы. Это позволяет при обходе получать информацию о БЭМ-сущностях [по их именам](https://ru.bem.info/toolbox/sdk/bem-naming/#Строковое-представление) или по именам файлов и директорий.
+**Примечание**  Для каждого уровня указывается схема именования файлов либо организации файловой системы. Это позволяет при обходе получать информацию о БЭМ-сущностях [по их именам](https://ru.bem.info/toolbox/sdk/bem-naming/#Строковое-представление) или по именам файлов и директорий.
 
 |  Схема | Значение по умолчанию | Все возможные значения |
 |----------|-----|----------|
@@ -106,21 +112,19 @@ var stream = walk(levels, levelMap);
 
 Передайте методу walk() объекты `levels` и `config`.
 
-Для получения данных о найденных файлах используется поток (stream). Когда порция данных получена, генерируется событие `data` и информация о найденном файле добавляется в массив `files`. При возникновении ошибки `bem-walk` прекращает обработку запроса и возвращает ответ, содержащий идентификатор ошибки и ее описание. Событие `end` наступает при окончании получения данных из потока.
+Для получения данных о найденных файлах используется поток (stream). Когда порция данных получена, генерируется событие `data` и [информация о найденном файле](#Выходные-данные) добавляется в массив `files`. При возникновении ошибки `bem-walk` прекращает обработку запроса и возвращает ответ, содержащий идентификатор ошибки и ее описание. Событие `end` наступает при окончании получения данных из потока.
 
 ```js
 var files = [];
 
 var stream = walk(levels, config);
-
-stream.on('data', file => files.push(file)); // добавляем информацию о найденном файле в конец массива files
+// добавляем информацию о найденном файле в конец массива files
+stream.on('data', file => files.push(file));
 
 stream.on('error', console.error);
 
 stream.on('end', () => console.log(files));
 ```
-
-[Подробнее о возвращаемых данных](#Выходные-данные).
 
 В результате выполненных действий полный код JavaScript-файла должен иметь следующий вид:
 
@@ -129,8 +133,12 @@ var walk = require('bem-walk'),
     config = {
         // уровни проекта
         levels: {
-            'lib/bem-core/common.blocks': { naming: 'origin' },
-            'common.blocks': { naming: 'origin' }
+            'lib/bem-core/common.blocks': {
+                naming: 'origin'
+            },
+            'common.blocks': {
+                naming: 'origin'
+            }
         }
     },
     levels = [
@@ -191,8 +199,12 @@ var walk = require('bem-walk'),
     config = {
         // уровни проекта
         levels: {
-            'lib/bem-components/common.blocks': { naming: 'origin' },
-            'common.blocks': { naming: 'origin' }
+            'lib/bem-components/common.blocks': {
+                naming: 'origin'
+            },
+            'common.blocks': {
+                naming: 'origin'
+            }
         }
     },
     groups = {};
@@ -207,7 +219,9 @@ stream.on('data', file => (groups[file.entity.block] = []).push(file));
 
 stream.on('error', console.error);
 
-stream.on('end', () => console.log(util.inspect(groups, { depth: null })));
+stream.on('end', () => console.log(util.inspect(groups, {
+    depth: null
+})));
 
 /*
 { button:
@@ -226,10 +240,14 @@ stream.on('end', () => console.log(util.inspect(groups, { depth: null })));
 ```js
 var walk = require('bem-walk'),
     config = {
-         // уровни проекта
+        // уровни проекта
         levels: {
-            'lib/bem-components/common.blocks': { naming: 'origin' },
-            'common.blocks': { naming: 'origin' }
+            'lib/bem-components/common.blocks': {
+                naming: 'origin'
+            },
+            'common.blocks': {
+                naming: 'origin'
+            }
         }
     },
     files = [];
@@ -242,7 +260,7 @@ var stream = walk([
 stream.on('data', function(file) {
     if (file.entity.block == 'popup') {
         files.push(file);
-    }  
+    }
 });
 
 stream.on('error', console.error);
@@ -269,8 +287,12 @@ var walk = require('bem-walk'),
     config = {
         // уровни проекта
         levels: {
-            'lib/bem-components/common.blocks': { naming: 'origin' },
-            'common.blocks': { naming: 'origin' }
+            'lib/bem-components/common.blocks': {
+                naming: 'origin'
+            },
+            'common.blocks': {
+                naming: 'origin'
+            }
         }
     };
 
@@ -279,18 +301,16 @@ var stream = walk([
     'common.blocks'
 ], config);
 
-stream.pipe(through2.obj(function (file, enc, callback) {
-    // Создание свойства source объекта file
-    if(fs.statSync(file.path).isFile()) {
-        file.source = fs.readFileSync(file.path, 'utf-8');
-    }
-
-    this.push(file);
-    callback();
-}))
+stream.pipe(through2.obj(function(file, enc, callback) {
+        if (fs.statSync(file.path).isFile()) {
+            // Создание свойства source объекта file
+            file.source = fs.readFileSync(file.path, 'utf-8');
+        }
+        this.push(file);
+        callback();
+    }))
     .pipe(stringify())
     .pipe(process.stdout);
-
 /*
 [{"entity":{"block":"search","elem":"header"},
   "tech":"css",
