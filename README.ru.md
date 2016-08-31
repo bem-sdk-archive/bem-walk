@@ -23,10 +23,10 @@
 [david]:        https://david-dm.org/bem-sdk/bem-walk
 [david-img]:    http://img.shields.io/david/bem-sdk/bem-walk.svg?style=flat
 
-Bem-walk позволяет получить следующую информацию о найденных файлах:
+`bem-walk` возвращает следующую информацию о найденных файлах:
 
-* тип БЭМ-сущности (Блок, Элемент, Модификатор);
-* технология реализации;
+* тип БЭМ-сущности ([Блок](https://ru.bem.info/methodology/key-concepts/#Блок), [Элемент](https://ru.bem.info/methodology/key-concepts/#Элемент) или [Модификатор](https://ru.bem.info/methodology/key-concepts/#Модификатор));
+* [технология реализации](https://ru.bem.info/methodology/key-concepts/#Технология-реализации);
 * расположение на файловой системе.
 
 ## Быстрый старт
@@ -44,7 +44,7 @@ $ npm install --save bem-walk
 Создайте JavaScript-файл с произвольным именем и добавьте строку следующего вида:
 
 ```js
-var walk = require('bem-walk');
+const walk = require('bem-walk');
 ```
 
 ### 3. Опишите уровни файловой системы
@@ -52,7 +52,7 @@ var walk = require('bem-walk');
 Опишите уровни файловой системы проекта в объекте `config`, созданного на шаге №2 файла.
 
 ```js
-var config = {
+const config = {
     // уровни проекта
     levels: {
         'lib/bem-core/common.blocks': {
@@ -71,7 +71,7 @@ var config = {
 
 Описание возможных значений, которые можно задать для каждой из схем, представлено в таблице.
 
-| Ключ | Схема | Значение по умолчанию | Все возможные значения |
+| Ключ | Схема | Значение по умолчанию | Возможные значения |
 |----|------|-----|----------|
 | `naming` | Именования файлов.|`origin`| `origin`, `two-dashes`|
 | `scheme` | Файловой системы.|`nested`|`nested`, `flat`|
@@ -83,9 +83,9 @@ var config = {
 **Примечание** Чтобы не определять уровни проекта вручную, воспользуйтесь инструментом [`bem-config`](https://ru.bem.info/toolbox/sdk/bem-config/).
 
 ```js
-var config = require('bem-config')();
-var levelMap = config.levelMapSync();
-var stream = walk(levels, levelMap);
+const config = require('bem-config')();
+const levelMap = config.levelMapSync();
+const stream = walk(levels, levelMap);
 ```
 
 ### 4. Опишите пути обхода
@@ -97,7 +97,7 @@ var stream = walk(levels, levelMap);
 * Относительно корневого каталога.
 
   ```js
-  var levels = [
+  const levels = [
       'libs/bem-core/common.blocks',
       'common.blocks'
   ];
@@ -106,7 +106,7 @@ var stream = walk(levels, levelMap);
 * Абсолютные.
 
   ```js
-  var levels = [
+  const levels = [
       '/path/to/project/lib/bem-core/common.blocks',
       '/path/to/project/common.blocks'
   ];
@@ -119,9 +119,9 @@ var stream = walk(levels, levelMap);
 Для получения данных о найденных файлах используется поток (stream). Когда порция данных получена, генерируется событие `data` и [информация о найденном файле](#Выходные-данные) добавляется в массив `files`. При возникновении ошибки `bem-walk` прекращает обработку запроса и возвращает ответ, содержащий идентификатор ошибки и ее описание. Событие `end` наступает при окончании получения данных из потока.
 
 ```js
-var files = [];
+const files = [];
 
-var stream = walk(levels, config);
+const stream = walk(levels, config);
 // добавляем информацию о найденном файле в конец массива files
 stream.on('data', file => files.push(file));
 
@@ -133,7 +133,7 @@ stream.on('end', () => console.log(files));
 В результате выполненных действий полный код JavaScript-файла должен иметь следующий вид:
 
 ```js
-var walk = require('bem-walk'),
+const walk = require('bem-walk'),
     config = {
         // уровни проекта
         levels: {
@@ -151,7 +151,7 @@ var walk = require('bem-walk'),
     ],
     files = [];
 
-var stream = walk(levels, config);
+const stream = walk(levels, config);
 
 stream.on('data', file => files.push(file));
 
@@ -198,8 +198,10 @@ stream.on('end', () => console.log(files));
 
 ### Группировка
 
+> Группируем найденные файлы по имени блока.
+
 ```js
-var walk = require('bem-walk'),
+const walk = require('bem-walk'),
     config = {
         // уровни проекта
         levels: {
@@ -214,7 +216,7 @@ var walk = require('bem-walk'),
     groups = {};
 const util = require('util');
 
-var stream = walk([
+const stream = walk([
     'libs/bem-components/common.blocks',
     'common.blocks'
 ], config);
@@ -241,9 +243,11 @@ stream.on('end', () => console.log(util.inspect(groups, {
 
 ### Фильтрация
 
+> Находим файлы блока `popup`.
+
 ```js
-var walk = require('bem-walk'),
-    config = {
+const walk = require('bem-walk'),
+    const config = {
         // уровни проекта
         levels: {
             'lib/bem-components/common.blocks': {
@@ -253,10 +257,10 @@ var walk = require('bem-walk'),
                 naming: 'origin'
             }
         }
-    },
-    files = [];
+    };
+const files = [];
 
-var stream = walk([
+const stream = walk([
     'libs/bem-components/common.blocks',
     'common.blocks'
 ], config);
@@ -283,12 +287,14 @@ stream.on('end', () => console.log(files));
 
 ### Трансформация
 
+> Находим БЭМ-файлы, читаем их содержимое и создаем новое свойство `source`.
+
 ```js
-var walk = require('bem-walk'),
-    stringify = require('JSONStream').stringify,
-    through2 = require('through2'),
-    fs = require('fs'),
-    config = {
+const walk = require('bem-walk'),
+const    stringify = require('JSONStream').stringify,
+const    through2 = require('through2'),
+const    fs = require('fs'),
+const    config = {
         // уровни проекта
         levels: {
             'lib/bem-components/common.blocks': {
@@ -300,7 +306,7 @@ var walk = require('bem-walk'),
         }
     };
 
-var stream = walk([
+const stream = walk([
     'libs/bem-components/common.blocks',
     'common.blocks'
 ], config);
