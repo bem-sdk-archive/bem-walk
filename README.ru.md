@@ -133,32 +133,23 @@ stream.on('end', () => console.log(files));
 В результате выполненных действий полный код JavaScript-файла должен иметь следующий вид:
 
 ```js
-const walk = require('bem-walk'),
-    config = {
-        // уровни проекта
-        levels: {
-            'lib/bem-core/common.blocks': {
-                naming: 'origin'
-            },
-            'common.blocks': {
-                naming: 'origin'
-            }
-        }
-    },
-    levels = [
-        'libs/bem-core/common.blocks',
-        'common.blocks'
-    ],
-    files = [];
+const walk = require('bem-walk');
+const config = require('bem-config')();
+const levels = [
+    'libs/bem-components/common.blocks',
+    'common.blocks'
+];
+const files = [];
 
-const stream = walk(levels, config);
-
-stream.on('data', file => files.push(file));
-
-stream.on('error', console.error);
-
-stream.on('end', () => console.log(files));
+const stream = walk(levels, {
+        levels: config.levelMapSync()
+    })
+    .on('data', file => files.push(file))
+    .on('error', console.error)
+    .on('end', () => console.log(files));
 ```
+
+**Примечание** В примере используется пакет `bem-config`.
 
 ## API
 
@@ -201,33 +192,29 @@ stream.on('end', () => console.log(files));
 > Группируем найденные файлы по имени блока.
 
 ```js
-const walk = require('bem-walk'),
-    config = {
-        // уровни проекта
-        levels: {
-            'lib/bem-components/common.blocks': {
-                naming: 'origin'
-            },
-            'common.blocks': {
-                naming: 'origin'
-            }
-        }
-    },
-    groups = {};
+const walk = require('bem-walk');
+const config = require('bem-config')();
 const util = require('util');
-
-const stream = walk([
+const levels = [
     'libs/bem-components/common.blocks',
     'common.blocks'
-], config);
+];
+const groups = {};
 
-stream.on('data', file => (groups[file.entity.block] = []).push(file));
+const stream = walk(levels, {
+        levels: config.levelMapSync()
+    })
+    .on('data', file => {
+        // Получаем имя блока для найденного файла.
+        const block = file.entity.block;
 
-stream.on('error', console.error);
-
-stream.on('end', () => console.log(util.inspect(groups, {
-    depth: null
-})));
+        // Добавляем информацию о найденном файле.
+        (groups[block] = []).push(file);
+    })
+    .on('error', console.error)
+    .on('end', () => console.log(util.inspect(groups, {
+        depth: null
+    })));
 
 /*
 { button:
@@ -246,34 +233,28 @@ stream.on('end', () => console.log(util.inspect(groups, {
 > Находим файлы блока `popup`.
 
 ```js
-const walk = require('bem-walk'),
-    const config = {
-        // уровни проекта
-        levels: {
-            'lib/bem-components/common.blocks': {
-                naming: 'origin'
-            },
-            'common.blocks': {
-                naming: 'origin'
-            }
-        }
-    };
-const files = [];
-
-const stream = walk([
+const walk = require('bem-walk');
+const config = require('bem-config')();
+const levels = [
     'libs/bem-components/common.blocks',
     'common.blocks'
-], config);
+];
+const files = [];
 
-stream.on('data', function(file) {
-    if (file.entity.block == 'popup') {
-        files.push(file);
-    }
-});
+const stream = walk(levels, {
+        levels: config.levelMapSync()
+    })
+    .on('data', file => {
+        // Получаем имя блока для найденного файла.
+        const block = file.entity.block;
 
-stream.on('error', console.error);
-
-stream.on('end', () => console.log(files));
+        // Добавляем информацию о найденном файле.
+        if (block == 'popup') {
+            files.push(file);
+        }
+    })
+    .on('error', console.error)
+    .on('end', () => console.log(files));
 
 /*
 [{ entity: { block: 'popup', modName: 'target', modVal: true },
@@ -290,32 +271,26 @@ stream.on('end', () => console.log(files));
 > Находим БЭМ-файлы, читаем их содержимое и создаем новое свойство `source`.
 
 ```js
-const walk = require('bem-walk'),
-const    stringify = require('JSONStream').stringify,
-const    through2 = require('through2'),
-const    fs = require('fs'),
-const    config = {
-        // уровни проекта
-        levels: {
-            'lib/bem-components/common.blocks': {
-                naming: 'origin'
-            },
-            'common.blocks': {
-                naming: 'origin'
-            }
-        }
-    };
-
-const stream = walk([
+const fs = require('fs');
+const walk = require('bem-walk');
+const config = require('bem-config')();
+const stringify = require('JSONStream').stringify;
+const through2 = require('through2');
+const levels = [
     'libs/bem-components/common.blocks',
     'common.blocks'
-], config);
+];
 
-stream.pipe(through2.obj(function(file, enc, callback) {
+const stream = walk(levels, {
+        levels: config.levelMapSync()
+    })
+    .pipe(through2.obj(function(file, enc, callback) {
+
         if (fs.statSync(file.path).isFile()) {
-            // Создание свойства source объекта file
+            // Записываем содержимое файла в поле `source`.
             file.source = fs.readFileSync(file.path, 'utf-8');
         }
+
         this.push(file);
         callback();
     }))
