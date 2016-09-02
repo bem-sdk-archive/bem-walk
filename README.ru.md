@@ -23,7 +23,7 @@
 [david]:        https://david-dm.org/bem-sdk/bem-walk
 [david-img]:    http://img.shields.io/david/bem-sdk/bem-walk.svg?style=flat
 
-`bem-walk` возвращает следующую информацию о найденных файлах:
+Возвращает следующую информацию о найденных файлах:
 
 * тип БЭМ-сущности ([Блок](https://ru.bem.info/methodology/key-concepts/#Блок), [Элемент](https://ru.bem.info/methodology/key-concepts/#Элемент) или [Модификатор](https://ru.bem.info/methodology/key-concepts/#Модификатор));
 * [технология реализации](https://ru.bem.info/methodology/key-concepts/#Технология-реализации);
