@@ -131,6 +131,7 @@ stream.on('error', console.error);
 
 stream.on('end', () => console.log(files));
 ```
+### Полный код примера
 
 В результате выполненных действий полный код JavaScript-файла должен иметь следующий вид:
 
@@ -287,14 +288,17 @@ const stream = walk(levels, {
         levels: config.levelMapSync()
     })
     .pipe(through2.obj(function(file, enc, callback) {
+        try {
+            // Некоторые технологии (например, `i18n`) могут быть директориями, а не файлами.
+            if (fs.statSync(file.path).isFile()) {
+                // Записываем содержимое файла в поле `source`.
+                file.source = fs.readFileSync(file.path, 'utf-8');
+                this.push(file);
+            }
 
-        if (fs.statSync(file.path).isFile()) {
-            // Записываем содержимое файла в поле `source`.
-            file.source = fs.readFileSync(file.path, 'utf-8');
+        } catch (err) {
+            callback(err);
         }
-
-        this.push(file);
-        callback();
     }))
     .pipe(stringify())
     .pipe(process.stdout);
