@@ -32,7 +32,7 @@ It returns the following information about found files:
 
 ## Quick start
 
-** Note** To use `bem-walk`, you must install Node.js 4.0+.
+**Note** To use `bem-walk`, you must install Node.js 4.0+.
 
 ### 1. Install bem-walk
 
@@ -48,7 +48,7 @@ Create a JavaScript file with any name and add the following string:
 const walk = require('bem-walk');
 ```
 
-** Note** You will use this JavaScript file for all the following steps.
+**Note** You will use this JavaScript file for all the following steps.
 
 ### 3. Define file system levels
 
@@ -64,7 +64,7 @@ const config = {
         },
         'common.blocks': {
             // `scheme` — file system scheme
-            sheme: 'nested'
+            scheme: 'nested'
         }
     }
 };
@@ -83,7 +83,7 @@ More information:
 * [ bem-naming]( https://en.bem.info/toolbox/sdk/bem-naming/)
 * [ bem-fs-scheme]( https://en.bem.info/toolbox/sdk/bem-fs-scheme/)
 
-** Note** Instead of defining the project's levels manually, use the [` bem-config`]( https://en.bem.info/toolbox/sdk/bem-config/) tool.
+**Note** Instead of defining the project's levels manually, use the [` bem-config`]( https://en.bem.info/toolbox/sdk/bem-config/) tool.
 
 ```js
 const config = require('bem-config')();
@@ -153,7 +153,7 @@ const stream = walk(levels, {
     .on('end', () => console.log(files));
 ```
 
-** Note** This sample uses the `bem-config` package.
+**Note** This sample uses the `bem-config` package.
 
 ## API
 
@@ -303,6 +303,7 @@ const stream = walk(levels, {
     }))
     .pipe(stringify())
     .pipe(process.stdout);
+    
 /*
 [{"entity":{"block":"search","elem":"header"},
   "tech":"css",

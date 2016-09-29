@@ -63,7 +63,7 @@ const config = {
         },
         'common.blocks': {
             // `scheme` — схема файловой системы
-            sheme: 'nested'
+            scheme: 'nested'
         }
     }
 };
@@ -302,6 +302,7 @@ const stream = walk(levels, {
     }))
     .pipe(stringify())
     .pipe(process.stdout);
+    
 /*
 [{"entity":{"block":"search","elem":"header"},
   "tech":"css",
