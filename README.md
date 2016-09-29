@@ -25,8 +25,7 @@ Tool for traversing a BEM project's file system.
 
 It returns the following information about found files:
 
-* The type of BEM entity ([block](https://en.bem.info/methodology/key-concepts/#block),
-[element](https://en.bem.info/methodology/key-concepts/#element) or [modifier]( https://en.bem.info/methodology/key-concepts/#modifier)).
+* The type of BEM entity ([block](https://en.bem.info/methodology/key-concepts/#block), [element](https://en.bem.info/methodology/key-concepts/#element) or [modifier]( https://en.bem.info/methodology/key-concepts/#modifier)).
 * The [implementation technology]( https://en.bem.info/methodology/key-concepts/#implementation-technology).
 * The location in the file system.
 
@@ -303,7 +302,7 @@ const stream = walk(levels, {
     }))
     .pipe(stringify())
     .pipe(process.stdout);
-    
+
 /*
 [{"entity":{"block":"search","elem":"header"},
   "tech":"css",
