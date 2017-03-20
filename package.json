@@ -37,7 +37,7 @@
     "nyc": "^10.0.0",
     "promise-map-series": "^0.2.2",
     "proxyquire": "^1.7.10",
-    "sinon": "^2.0.0",
+    "sinon": "^2.1.0",
     "stream-to-array": "^2.3.0"
   },
   "scripts": {
