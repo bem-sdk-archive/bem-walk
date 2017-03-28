@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "ava": "^0.18.0",
-    "benchmark": "^2.1.0",
+    "benchmark": "^2.1.4",
     "coveralls": "^2.11.9",
     "eslint": "^3.0.0",
     "eslint-config-pedant": "^0.8.0",
